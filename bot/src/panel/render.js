@@ -1,4 +1,5 @@
 import { page, h, empty, money as fmtMoney, plural, cap } from './layout.js';
+import { icon } from './icons.js';
 
 export { h };
 
@@ -8,7 +9,7 @@ function card(a, { hhmm, money, maskPhoneUi }) {
   const cls = done ? 'appt done' : noShow ? 'appt noshow' : 'appt';
 
   return `
-<div class="${cls}" id="appt-${a.id}" style="--m:${h(a.color || '#a855f7')}">
+<div class="${cls}" id="appt-${a.id}" style="--m:${h(a.color || '#8a8a92')}">
   <div class="hd">
     <span class="time">${h(hhmm(a.starts_at))}</span>
     <span class="who">${h(a.client_name || 'Без имени')}</span>
@@ -20,8 +21,8 @@ function card(a, { hhmm, money, maskPhoneUi }) {
   </div>
   ${a.comment ? `<div class="note-line">${h(a.comment)}</div>` : ''}
 
-  ${done ? '<div class="state">✓ Пришла</div>'
-    : noShow ? '<div class="state">✕ Не пришла</div>'
+  ${done ? `<div class="state">${icon('check', 16)} Пришла</div>`
+    : noShow ? `<div class="state">${icon('x', 16)} Не пришла</div>`
     : `<button class="btn primary block lg" style="margin-top:12px"
          hx-post="/panel/appt/${a.id}/status"
          hx-vals='{"status":"done"}'
@@ -31,7 +32,7 @@ function card(a, { hhmm, money, maskPhoneUi }) {
     <summary aria-label="Действия с записью">•••</summary>
     <div class="acts">
       <a class="btn" href="/panel/client/${a.client_id}/phone" target="_blank" rel="noopener">
-        💬 WhatsApp · ${h(maskPhoneUi(a.phone_e164))}</a>
+        ${icon('phone', 15)} WhatsApp · ${h(maskPhoneUi(a.phone_e164))}</a>
       ${!done && !noShow ? `
       <button class="btn"
         hx-post="/panel/appt/${a.id}/status" hx-vals='{"status":"no_show"}'
@@ -68,7 +69,7 @@ function day(d) {
   ].join('');
 
   const groups = d.groups.length === 0
-    ? empty('🗓', 'На этот день записей нет', 'Свободный день. Записать клиентку можно кнопкой ниже')
+    ? empty('calendar', 'На этот день записей нет', 'Свободный день. Записать клиентку можно кнопкой ниже')
     : d.groups.map((g) => `
       <section class="mgroup" style="--m:${h(g.master.color)}">
         <h2>${h(g.master.master)}</h2>

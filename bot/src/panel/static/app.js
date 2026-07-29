@@ -56,7 +56,8 @@
     sessionStorage.setItem('pwaHint', '1');
     const el = document.createElement('div');
     el.style.cssText =
-      'position:fixed;left:12px;right:12px;bottom:96px;background:#211d26;color:#fff;' +
+      'position:fixed;left:12px;right:12px;bottom:96px;background:#141416;color:#f2f2f3;' +
+      'border:1px solid #2e2e33;' +
       'padding:14px 16px;border-radius:14px;font-size:14px;line-height:1.4;z-index:50';
     el.textContent = text;
     el.addEventListener('click', () => el.remove());

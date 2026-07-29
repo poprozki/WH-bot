@@ -8,7 +8,7 @@ CREATE TABLE masters (
   name          text        NOT NULL,
 
   active        boolean     NOT NULL DEFAULT true,
-  color         text        NOT NULL DEFAULT '#c084fc',
+  color         text        NOT NULL DEFAULT '#8a8a92',
   created_at    timestamptz NOT NULL DEFAULT now()
 );
 

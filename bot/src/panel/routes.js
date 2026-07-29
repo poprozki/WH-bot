@@ -78,12 +78,12 @@ export function mountPanel(app) {
       short_name: 'Записи',
       start_url: '/',
       display: 'standalone',
-      background_color: '#faf7f8',
-      theme_color: '#c084fc',
+      background_color: '#000000',
+      theme_color: '#000000',
       lang: 'ru',
       icons: [
-        { src: '/panel/static/icon-192.png', sizes: '192x192', type: 'image/png' },
-        { src: '/panel/static/icon-512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/panel/static/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+        { src: '/panel/static/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
       ],
     }));
   });
@@ -200,7 +200,7 @@ export function mountPanel(app) {
           dedupKey: `cancel-notice:${id}`,
           body:
             `Здравствуйте! К сожалению, вашу запись на ${hhmm(appt.starts_at)} пришлось отменить. ` +
-            `Извините, пожалуйста 🙏 Напишите, если хотите подобрать другое время — подберём удобное.`,
+            `Извините, пожалуйста. Напишите, если хотите подобрать другое время — подберём удобное.`,
         });
       }
     }, `panel:${req.user.email}`);
@@ -314,19 +314,19 @@ export function mountPanel(app) {
 ${refresh ? `<meta http-equiv="refresh" content="${refresh}">` : ''}
 <title>Привязка WhatsApp</title>
 <style>
- body{background:#17141a;color:#f2eef5;font:16px/1.5 system-ui,sans-serif;
+ body{background:#000;color:#f2f2f3;font:16px/1.5 system-ui,sans-serif;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
       min-height:100vh;margin:0;padding:24px;text-align:center}
  img{width:min(78vw,340px);height:auto;background:#fff;padding:14px;border-radius:16px}
- .s{color:#9a91a6;font-size:14px;margin-top:14px}
- .ok{color:#3fb98a;font-size:22px;font-weight:600}
- .err{color:#e2557b}
- ol{text-align:left;max-width:340px;color:#9a91a6;font-size:14px;line-height:1.7}
+ .s{color:#7d7d85;font-size:14px;margin-top:14px}
+ .ok{color:#56d364;font-size:22px;font-weight:600}
+ .err{color:#ff7b72}
+ ol{text-align:left;max-width:340px;color:#7d7d85;font-size:14px;line-height:1.7}
 </style></head><body>${body}</body></html>`;
 
     if (status === 'WORKING') {
       return res.send(page(
-        `<div class="ok">✅ Телефон привязан</div>
+        `<div class="ok">Телефон привязан</div>
          <div class="s">Бот подключён к WhatsApp и готов отвечать.</div>`, 0));
     }
 

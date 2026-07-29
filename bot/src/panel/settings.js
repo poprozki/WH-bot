@@ -2,6 +2,7 @@ import express from 'express';
 import { q, one, tx } from '../db.js';
 import { page, h, empty, money, plural } from './layout.js';
 import { log } from '../log.js';
+import { icon } from './icons.js';
 
 const WEEKDAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
 const DAYS_SHORT = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -21,22 +22,22 @@ export function mountSettings(r) {
     ]);
     res.send(shell('Настройки', `
       <div class="menu">
-        <a href="/panel/settings/services"><span class="ico">💅</span>
+        <a href="/panel/settings/services"><span class="ico">${icon('tag')}</span>
           <span class="tx"><b>Услуги и цены</b><span>что делаем и за сколько</span></span>
           <span class="val">${svc.n} ${plural(svc.n, "услуга", "услуги", "услуг")}</span><span class="chev">›</span></a>
-        <a href="/panel/settings/masters"><span class="ico">👩</span>
+        <a href="/panel/settings/masters"><span class="ico">${icon('users')}</span>
           <span class="tx"><b>Мастера</b><span>кто работает</span></span>
           <span class="val">${m.n} ${plural(m.n, "мастер", "мастера", "мастеров")}</span><span class="chev">›</span></a>
-        <a href="/panel/settings/schedule"><span class="ico">🕘</span>
+        <a href="/panel/settings/schedule"><span class="ico">${icon('clock')}</span>
           <span class="tx"><b>График работы</b><span>постоянное расписание на неделю</span></span>
           <span class="chev">›</span></a>
-        <a href="/panel/settings/days"><span class="ico">🏖</span>
+        <a href="/panel/settings/days"><span class="ico">${icon('calendarOff')}</span>
           <span class="tx"><b>Выходные и отпуска</b><span>разовые нерабочие дни</span></span>
           <span class="chev">›</span></a>
-        <a href="/panel/settings/voice"><span class="ico">💬</span>
+        <a href="/panel/settings/voice"><span class="ico">${icon('voice')}</span>
           <span class="tx"><b>Как бот разговаривает</b><span>имя, тон, ваши правила</span></span>
           <span class="val">${h(st.bot_name || 'Алина')}</span><span class="chev">›</span></a>
-        <a href="/panel/settings/salon"><span class="ico">⚙️</span>
+        <a href="/panel/settings/salon"><span class="ico">${icon('sliders')}</span>
           <span class="tx"><b>Салон и бот</b><span>сроки, перерывы, тихие часы</span></span>
           <span class="val">${st.bot_enabled ? 'бот включён' : 'ВЫКЛЮЧЕН'}</span><span class="chev">›</span></a>
       </div>
@@ -130,7 +131,7 @@ export function mountSettings(r) {
     await q(`UPDATE masters SET name = $2, color = $3, active = $4 WHERE id = $1`, [
       Number(req.params.id),
       String(req.body.name || '').trim().slice(0, 60),
-      String(req.body.color || '#c084fc'),
+      String(req.body.color || '#8a8a92'),
       req.body.active === '1',
     ]);
     res.set('HX-Trigger', 'saved').send('');

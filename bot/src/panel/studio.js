@@ -42,7 +42,7 @@ export function mountStudio(r) {
        LIMIT 60`);
 
     const list = rows.length === 0
-      ? empty('💬','Пока ни одного диалога','Как только клиентка напишет боту, диалог появится здесь')
+      ? empty('chat','Пока ни одного диалога','Как только клиентка напишет боту, диалог появится здесь')
       : rows.map((c) => {
 
         const unanswered = c.last_role === 'user';
@@ -94,7 +94,7 @@ export function mountStudio(r) {
         ${client.no_show_count > 0 ? `<span class="tag no">не пришла ${client.no_show_count} раз</span>` : ''}
       </div>
       ${apptBlock}
-      <div class="thread">${thread || empty('💬','Сообщений нет')}</div>
+      <div class="thread">${thread || empty('chat','Сообщений нет')}</div>
       <div style="height:20px"></div>`, 'chats', isDev(req)));
   });
 
@@ -153,7 +153,7 @@ export function mountStudio(r) {
       ${top.length ? `<div class="card"><div class="card-title">Что заказывают чаще</div>
         <div class="tbl-wrap"><table class="d">${top.map((t) => `
           <tr><td>${h(t.name)}</td><td class="num">${t.n}</td></tr>`).join('')}</table></div>
-      </div>` : empty('📊', 'Пока нет данных', 'появятся после первых записей')}
+      </div>` : empty('chart', 'Пока нет данных', 'появятся после первых записей')}
       <div class="note">
         «Без ответа» — диалоги, где последнее слово осталось за клиенткой.
         Это либо бот промолчал, либо ждёт вашего ответа после передачи человеку.
@@ -174,7 +174,7 @@ export function mountStudio(r) {
       </div>
       <div class="thread" id="thread" aria-live="polite">
         ${msgs.map((m) => `<div class="bubble ${m.role === 'user' ? 'u' : 'a'}">${h(m.content)}</div>`).join('')
-          || empty('🧪','Напишите первое сообщение','Бот ответит по-настоящему, но в WhatsApp ничего не уйдёт')}
+          || empty('beaker','Напишите первое сообщение','Бот ответит по-настоящему, но в WhatsApp ничего не уйдёт')}
       </div>
       <form class="composer" hx-post="/panel/console/send" hx-target="#thread"
             hx-swap="beforeend" hx-on::after-request="this.reset()">

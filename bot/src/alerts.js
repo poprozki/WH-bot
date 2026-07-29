@@ -50,7 +50,8 @@ export async function notifyOwner({ title, body, url = '/', urgent = false }) {
   const subs = await q(
     `SELECT ps.id, ps.endpoint, ps.p256dh, ps.auth
        FROM push_subscriptions ps
-       JOIN panel_users u ON u.id = ps.user_id
+       JOIN panel_identities u
+         ON u.tenant_id = ps.tenant_id AND u.email = ps.email
       WHERE u.role = 'owner' AND ps.fail_count < 5`
   );
 

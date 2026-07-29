@@ -243,7 +243,7 @@ export function mountSalons(r) {
           <input name="confirm" placeholder="Впишите ${h(t.slug)} для подтверждения"
                  style="min-height:48px;padding:0 14px;width:100%;border:1px solid var(--danger);
                         border-radius:12px;background:transparent;color:var(--ink);margin-bottom:10px">
-          <button class="btn primary block lg" style="background:var(--danger)">Удалить салон</button>
+          <button class="btn danger block lg">Удалить салон</button>
         </form>
       </div>`));
   });

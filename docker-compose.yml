@@ -98,6 +98,7 @@ services:
       SALON_TZ: Asia/Almaty
 
       DATABASE_URL: postgres://bot:${BOT_DB_PASSWORD:?required}@postgres:5432/salon
+      MIGRATE_DATABASE_URL: postgres://salon:${PG_PASSWORD:?required}@postgres:5432/salon
       WAHA_URL: http://waha:3000
       WAHA_API_KEY: ${WAHA_API_KEY}
       WAHA_SESSION: default

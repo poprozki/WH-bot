@@ -18,7 +18,7 @@ if (devAuth && isProd) {
   );
 }
 if (devAuth) {
-  log.warn('⚠️  ПАНЕЛЬ БЕЗ АУТЕНТИФИКАЦИИ (PANEL_DEV_AUTH=1). Только для локальной разработки.');
+  log.warn('ПАНЕЛЬ БЕЗ АУТЕНТИФИКАЦИИ (PANEL_DEV_AUTH=1). Только для локальной разработки.');
 }
 
 export async function requireAuth(req, res, next) {

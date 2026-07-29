@@ -6,9 +6,9 @@ ON CONFLICT (id) DO UPDATE
   SET salon_name = EXCLUDED.salon_name, address = EXCLUDED.address;
 
 INSERT INTO masters (id, name, color) VALUES
-  (1, 'Айгуль',  '#f472b6'),
-  (2, 'Динара',  '#a78bfa'),
-  (3, 'Сауле',   '#60a5fa')
+  (1, 'Айгуль',  '#f2f2f3'),
+  (2, 'Динара',  '#9a9aa2'),
+  (3, 'Сауле',   '#55555c')
 ON CONFLICT (id) DO NOTHING;
 SELECT setval('masters_id_seq', (SELECT max(id) FROM masters));
 

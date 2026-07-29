@@ -1,4 +1,6 @@
-const ASSET_V = '7';
+import { icon } from './icons.js';
+
+const ASSET_V = '10';
 export const asset = (name) => `/panel/static/${name}?v=${ASSET_V}`;
 
 export function h(v) {
@@ -11,13 +13,13 @@ export function h(v) {
 }
 
 const NAV = [
-  { key: 'day',    href: '/panel/',         icon: '📅', label: 'Сегодня',   dev: false },
-  { key: 'chats',  href: '/panel/chats',    icon: '💬', label: 'Чаты',      dev: false },
-  { key: 'stats',  href: '/panel/stats',    icon: '📈', label: 'Статистика',   dev: false },
-  { key: 'set',    href: '/panel/settings', icon: '⚙️', label: 'Настройки', dev: false },
-  { key: 'con',    href: '/panel/console',  icon: '🧪', label: 'Консоль',   dev: true  },
-  { key: 'salons', href: '/panel/salons',   icon: '🏢', label: 'Салоны',    dev: true  },
-  { key: 'ops',    href: '/panel/ops',      icon: '🩺', label: 'Служебное', dev: true  },
+  { key: 'day',    href: '/panel/',         icon: 'calendar', label: 'Сегодня',    dev: false },
+  { key: 'chats',  href: '/panel/chats',    icon: 'chat',     label: 'Чаты',       dev: false },
+  { key: 'stats',  href: '/panel/stats',    icon: 'chart',    label: 'Статистика', dev: false },
+  { key: 'set',    href: '/panel/settings', icon: 'sliders',  label: 'Настройки',  dev: false },
+  { key: 'con',    href: '/panel/console',  icon: 'beaker',   label: 'Консоль',    dev: true  },
+  { key: 'salons', href: '/panel/salons',   icon: 'building', label: 'Салоны',     dev: true  },
+  { key: 'ops',    href: '/panel/ops',      icon: 'pulse',    label: 'Служебное',  dev: true  },
 ];
 
 const MOBILE = ['day', 'chats', 'stats', 'set', 'con'];
@@ -29,11 +31,11 @@ function sidebar(active, dev, salonName) {
 
   const row = (n) => `
     <a href="${n.href}" class="${active === n.key ? 'on' : ''}"${active === n.key ? ' aria-current="page"' : ''}>
-      <span class="i" aria-hidden="true">${n.icon}</span>${h(n.label)}</a>`;
+      <span class="i">${icon(n.icon)}</span>${h(n.label)}</a>`;
 
   return `
   <aside class="side">
-    <div class="brand"><span class="dot" aria-hidden="true">◈</span>${h(salonName || 'Студия')}</div>
+    <div class="brand"><span class="dot">${icon('mark')}</span>${h(salonName || 'Студия')}</div>
     ${own.map(row).join('')}
     ${devItems.length ? `<div class="grp">Разработчику</div>${devItems.map(row).join('')}` : ''}
   </aside>`;
@@ -45,7 +47,7 @@ function tabbar(active, dev) {
   <nav class="tabbar">
     ${items.map((n) => `
       <a href="${n.href}" class="${active === n.key ? 'on' : ''}"${active === n.key ? ' aria-current="page"' : ''}>
-        <span class="i" aria-hidden="true">${n.icon}</span>${h(n.label)}</a>`).join('')}
+        <span class="i">${icon(n.icon)}</span>${h(n.label)}</a>`).join('')}
   </nav>`;
 }
 
@@ -55,8 +57,7 @@ export function page({ title, body, active = '', dev = false, sub = '',
 <html lang="ru"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#9333ea" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141118" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Записи">
 <link rel="manifest" href="/panel/manifest.webmanifest">
@@ -85,9 +86,9 @@ ${tabbar(active, dev)}
 </body></html>`;
 }
 
-export function empty(icon, title, hint = '') {
+export function empty(iconName, title, hint = '') {
   return `<div class="empty">
-    <div class="big" aria-hidden="true">${icon}</div>
+    <div class="big">${icon(iconName)}</div>
     <p>${h(title)}</p>
     ${hint ? `<small>${h(hint)}</small>` : ''}
   </div>`;
