@@ -1,0 +1,27 @@
+{
+  "name": "salon-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --import ./test/setup.js --test \"test/*.test.js\"",
+    "vapid": "node scripts/gen-vapid.js",
+    "vendor": "node scripts/vendor-htmx.js",
+    "test:db": "node --import ./test/setup.js --test \"test/db.*.test.js\"",
+    "migrate": "node scripts/migrate.js",
+    "migrate:dry": "node scripts/migrate.js --dry",
+    "smoke": "bash scripts/smoke.sh"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "jose": "^6.1.0",
+    "openai": "^6.9.0",
+    "pg": "^8.16.3",
+    "web-push": "^3.6.7"
+  }
+}

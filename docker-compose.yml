@@ -1,0 +1,191 @@
+name: salon
+
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      POSTGRES_DB: salon
+      POSTGRES_USER: salon
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD is required}
+      BOT_DB_PASSWORD: ${BOT_DB_PASSWORD:?BOT_DB_PASSWORD is required}
+      TZ: Asia/Almaty
+      PGTZ: Asia/Almaty
+      LANG: C.UTF-8
+      POSTGRES_INITDB_ARGS: "--locale=C.UTF-8 --encoding=UTF8"
+    command:
+      - postgres
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - max_connections=60
+      - -c
+      - work_mem=8MB
+      - -c
+      - timezone=Asia/Almaty
+      - -c
+      - log_min_duration_statement=2000
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U salon -d salon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: 1024m
+    cpus: 1.5
+    logging: *logging
+
+  waha:
+    image: devlikeapro/waha:noweb-2026.7.1
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      WHATSAPP_DEFAULT_ENGINE: NOWEB
+      TZ: Asia/Almaty
+
+      WAHA_API_KEY: ${WAHA_API_KEY:?WAHA_API_KEY is required}
+      WAHA_DASHBOARD_USERNAME: ${WAHA_DASHBOARD_USER:?required}
+      WAHA_DASHBOARD_PASSWORD: ${WAHA_DASHBOARD_PASSWORD:?required}
+      WHATSAPP_SWAGGER_USERNAME: ${WAHA_DASHBOARD_USER}
+      WHATSAPP_SWAGGER_PASSWORD: ${WAHA_DASHBOARD_PASSWORD}
+
+      WHATSAPP_HOOK_URL: http://bot:3000/webhook/waha
+      WHATSAPP_HOOK_EVENTS: message.any,session.status,message.ack
+      WHATSAPP_HOOK_HMAC_KEY: ${WAHA_HMAC_KEY:?WAHA_HMAC_KEY is required}
+      WHATSAPP_HOOK_RETRIES_ATTEMPTS: "5"
+      WHATSAPP_HOOK_RETRIES_DELAY_SECONDS: "2"
+
+      WHATSAPP_FILES_LIFETIME: "0"
+      WHATSAPP_FILES_FOLDER: /app/files
+      WHATSAPP_DOWNLOAD_MEDIA: "true"
+
+      WAHA_PRINT_QR: "false"
+      WAHA_LOG_FORMAT: json
+      WAHA_LOG_LEVEL: info
+    volumes:
+      - waha_sessions:/app/.sessions
+      - waha_files:/app/files
+    ports:
+      - "127.0.0.1:3000:3000"
+    mem_limit: 1024m
+    cpus: 1.5
+    logging: *logging
+
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    restart: unless-stopped
+    stop_grace_period: 20s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=384
+      TZ: Asia/Almaty
+      SALON_TZ: Asia/Almaty
+
+      DATABASE_URL: postgres://bot:${BOT_DB_PASSWORD:?required}@postgres:5432/salon
+      WAHA_URL: http://waha:3000
+      WAHA_API_KEY: ${WAHA_API_KEY}
+      WAHA_SESSION: default
+      WAHA_HMAC_KEY: ${WAHA_HMAC_KEY}
+
+      ASR_URL: http://asr:9000
+      ASR_TIMEOUT_MS: "12000"
+
+      LLM_PROVIDER: ${LLM_PROVIDER:-deepseek}
+      LLM_API_KEY: ${LLM_API_KEY:?LLM_API_KEY is required}
+      LLM_FREE_MODEL: ${LLM_FREE_MODEL:-}
+
+      DEV_TELEGRAM_TOKEN: ${DEV_TELEGRAM_TOKEN:-}
+      DEV_TELEGRAM_CHAT_ID: ${DEV_TELEGRAM_CHAT_ID:-}
+
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@example.com}
+
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET is required}
+      PANEL_ORIGIN: ${PANEL_ORIGIN:-http://localhost:3001}
+      BASE_DOMAIN: ${BASE_DOMAIN:-}
+
+      GOOGLE_SA_EMAIL: ${GOOGLE_SA_EMAIL:-}
+      GOOGLE_SA_KEY: ${GOOGLE_SA_KEY:-}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+      CF_ACCESS_TEAM_DOMAIN: ${CF_ACCESS_TEAM_DOMAIN:-}
+      CF_ACCESS_AUD: ${CF_ACCESS_AUD:-}
+      PANEL_DEV_AUTH: ${PANEL_DEV_AUTH:-0}
+      PANEL_DEV_EMAIL: ${PANEL_DEV_EMAIL:-dev@localhost}
+    volumes:
+      - waha_files:/app/waha-files:ro
+    ports:
+      - "127.0.0.1:3001:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    mem_limit: 512m
+    cpus: 1.5
+    logging: *logging
+
+  asr:
+    build: ./asr
+    restart: unless-stopped
+    profiles: ["voice"]
+    environment:
+      TZ: Asia/Almaty
+      HF_HOME: /models
+      ASR_MODEL: gigaam-v3-e2e-rnnt
+      ASR_THREADS: "4"
+    volumes:
+      - asr_models:/models
+      - waha_files:/app/waha-files:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:9000/healthz', timeout=3).status==200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    mem_limit: 3072m
+    cpus: 3.0
+    logging: *logging
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.7.3
+    restart: unless-stopped
+    profiles: ["web"]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -z "$$TUNNEL_TOKEN" ]; then
+          echo "CF_TUNNEL_TOKEN не задан в .env — туннель запускать нечем."
+          exit 1
+        fi
+        exec cloudflared tunnel --no-autoupdate --metrics 127.0.0.1:2000 run
+    environment:
+      TUNNEL_TOKEN: ${CF_TUNNEL_TOKEN:-}
+      TZ: Asia/Almaty
+    mem_limit: 128m
+    cpus: 0.5
+    logging: *logging
+
+volumes:
+  pgdata:
+  waha_sessions:
+  waha_files:
+  asr_models:

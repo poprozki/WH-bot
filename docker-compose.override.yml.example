@@ -1,0 +1,16 @@
+services:
+  waha:
+    ports: !override
+      - "0.0.0.0:3010:3000"
+
+  bot:
+    ports: !override
+      - "0.0.0.0:3011:3000"
+    volumes:
+      - ./bot/test:/app/test:ro
+    environment:
+      NODE_ENV: development
+      PANEL_DEV_AUTH: "1"
+      PANEL_DEV_EMAIL: dev@localhost
+      PANEL_ORIGIN: http://localhost:3011
+      LOG_LEVEL: debug
